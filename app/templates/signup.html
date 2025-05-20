@@ -1,0 +1,52 @@
+{% set page = "Sign Up" %}
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 90vh;">
+    <div class="card p-4 shadow-lg" style="width: 100%; max-width: 400px; background-color: #fff;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">{{ page_title }}</h2>
+            {% if page_title == "Login" %}
+                <p class="text-muted">Welcome back! Please log into your account.</p>
+            {% else %}
+                <p class="text-muted">Create your account and start managing your finances!</p>
+            {% endif %}
+        </div>
+
+        <form method="POST" action="">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required placeholder="Enter your username">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                {% if page_title == "Login" %}
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                {% else %}
+                    <i class="bi bi-person-plus-fill"></i> Sign Up
+                {% endif %}
+            </button>
+        </form>
+
+        {% if page_title == "Login" %}
+            <div class="mt-3 text-center">
+                <a href="#" class="text-decoration-none small text-muted">Forgot password?</a>
+            </div>
+            <div class="mt-2 text-center">
+                <small>Don't have an account?</small>
+                <a href="{{ url_for('routes.signup') }}" class="text-primary text-decoration-none fw-bold">Sign Up</a>
+            </div>
+        {% else %}
+            <div class="mt-3 text-center">
+                <small>Already have an account?</small>
+                <a href="{{ url_for('routes.login') }}" class="text-primary text-decoration-none fw-bold">Login</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

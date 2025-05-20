@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Expense History{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4 fw-bold">Expense History</h2>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Amount (KES)</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.amount }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>{{ expense.date_added.strftime('%d-%m-%Y') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-muted">No expenses recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

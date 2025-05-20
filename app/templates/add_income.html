@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Income{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card p-5 shadow-lg" style="width: 100%; max-width: 450px; border-radius: 15px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Add Income</h2>
+            <p class="text-muted">Record your new income entry</p>
+        </div>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount (KES)</label>
+                <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
+            </div>
+            <div class="mb-4">
+                <label for="income_type" class="form-label">Income Type</label>
+                <select class="form-select" id="income_type" name="income_type" required>
+                    <option value="">Select</option>
+                    <option value="daily">Daily</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Add Income</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

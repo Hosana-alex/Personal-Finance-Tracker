@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container my-4">
+
+    <!-- Top: App Name and Buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Welcome, {{ current_user.username }}</h2>
+        <div class="quick-buttons d-flex flex-wrap gap-2">
+            <a href="{{ url_for('routes.add_income') }}" class="btn btn-success btn-lg">+ Add Income</a>
+            <a href="{{ url_for('routes.add_expense') }}" class="btn btn-primary btn-lg">+ Add Expense</a>
+            <a href="{{ url_for('routes.set_goal') }}" class="btn btn-warning btn-lg">+ Add Savings Goal</a>
+            <a href="{{ url_for('routes.history') }}" class="btn btn-secondary btn-lg">View History</a>
+            <a href="{{ url_for('routes.analysis') }}" class="btn btn-info btn-lg">Analyze</a>
+        </div>
+    </div>
+
+    <!-- First Row: Income Summary + Budget Recommendation -->
+    <div class="row mb-4 g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h5 class="fw-bold mb-3">Income Summary</h5>
+                <div class="bg-light rounded p-3 d-flex justify-content-around">
+                    <div class="text-center">
+                        <h6 class="text-muted">Total Income</h6>
+                        <h5 class="fw-bold">KES {{ total_income|round(2) }}</h5>
+                    </div>
+                    <div class="text-center">
+                        <h6 class="text-muted">Total Expenses</h6>
+                        <h5 class="fw-bold">KES {{ total_expenses|round(2) }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h5 class="fw-bold mb-3">Recommended Budgets</h5>
+                <div class="bg-light rounded p-3 d-flex justify-content-around">
+                    <div class="text-center">
+                        <h6 class="text-muted">Monthly Budget</h6>
+                        <h5 class="fw-bold">KES {{ recommended_monthly_budget|round(2) if recommended_monthly_budget else 'N/A' }}</h5>
+                    </div>
+                    <div class="text-center">
+                        <h6 class="text-muted">Daily Budget</h6>
+                        <h5 class="fw-bold">KES {{ recommended_daily_budget|round(2) if recommended_daily_budget else 'N/A' }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Section: Saving Progress Left, Chart & Trend Right -->
+    <div class="row mb-4 align-items-stretch">
+        <!-- Left Column: 2 stacked cards -->
+        <div class="col-md-6 d-flex flex-column gap-3">
+            <div class="card flex-fill shadow">
+                <div class="card-body p-3">
+                    <h5 class="text-start mb-4">Savings Goal Progress</h5>
+                    {% if goal_progress %}
+                        <div class="progress my-3" style="height: 18px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ savings_rate|round(2) }}%"
+                                 aria-valuenow="{{ savings_rate|round(2) }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ savings_rate|round(2) }}%
+                            </div>
+                        </div>
+                        <p class="text-center">{{ goal_progress }}</p>
+                    {% else %}
+                        <p class="text-center">No active savings goal yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card flex-fill shadow">
+                <div class="card-body p-3">
+                    <h5 class="text-start">Savings Target Overview</h5>
+                    <br>
+                    {% if goal %}
+                        <p><strong>Goal Amount:</strong> KES {{ goal.goal_amount }}</p>
+                        <p><strong>Due Date:</strong> {{ goal.due_date.strftime('%d %b %Y') }}</p>
+                    {% else %}
+                        <p>No savings goal set yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: 2 stacked cards -->
+        <div class="col-md-6 d-flex flex-column gap-3">
+            <div class="card flex-fill shadow">
+                <div class="card-body p-3">
+                    <h5 class="text-start">Spending Breakdown</h5>
+                    <canvas id="expensesChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+
+            <div class="card flex-fill shadow">
+                <div class="card-body p-3">
+                    <h5 class="text-start">Spending Trend Analysis</h5>
+                    <p>Overall trend: Stable spending. Keep monitoring!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h5 class="text-start mb-4">Recent Transactions</h5>
+                    <ul class="list-group">
+                        {% for transaction in recent_transactions %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ transaction.category }}</span>
+                            <span>KES {{ transaction.amount }}</span>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-center">No recent transactions yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js Script -->
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('expensesChart').getContext('2d');
+const expensesChart = new Chart(ctx, {
+    type: 'doughnut',  // Changed from 'pie' to 'doughnut'
+    data: {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+            label: 'Expenses Breakdown',
+            data: {{ chart_data|safe }},
+            backgroundColor: [
+                '#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1'
+            ],
+            borderColor: '#fff',  // white borders between slices
+            borderWidth: 2
+        }]
+    },
+    options: {
+        cutout: '70%',  // Make a bigger hole in the center
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 15,
+                    padding: 20
+                }
+            }
+        }
+    }
+});
+</script>
+
+
+{% endblock %}
+

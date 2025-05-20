@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Set Savings Goal{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card p-5 shadow-lg" style="width: 100%; max-width: 450px;">
+        <h2 class="text-center mb-4 fw-bold">Set Monthly Savings Goal</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="goal_amount" class="form-label">Goal Amount (KES)</label>
+                <input type="number" name="goal_amount" class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="due_date" class="form-label">Due Date</label>
+                <input type="date" name="due_date" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2">Set Goal</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

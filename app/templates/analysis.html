@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Financial Health Report{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+    <h2 class="fw-bold text-center mb-5">Financial Health Report</h2>
+
+    <!-- Filter Form (Expense Type Selection) -->
+    <form method="POST" action="{{ url_for('routes.analysis') }}" class="mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <label class="input-group-text" for="expense_filter">Analyze Expenses By</label>
+                    <select class="form-select" name="expense_filter" id="expense_filter" required>
+                        <option value="all" {% if request.form.get('expense_filter') == 'all' %}selected{% endif %}>All</option>
+                        <option value="daily" {% if request.form.get('expense_filter') == 'daily' %}selected{% endif %}>Daily</option>
+                        <option value="monthly" {% if request.form.get('expense_filter') == 'monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="one-time" {% if request.form.get('expense_filter') == 'one-time' %}selected{% endif %}>One-Time</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% if results %}
+    <!-- Top Category and Persona Cards -->
+    <div class="row mb-4 g-4">
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm d-flex align-items-start" style="background-color: #f8f9fa;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-lock-fill text-primary me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h6 class="text-muted">Category</h6>
+                        <h5 class="fw-bold">{{ results.category }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm d-flex align-items-start" style="background-color: #f8f9fa;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-person-badge-fill text-success me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h6 class="text-muted">Financial Persona</h6>
+                        <h5 class="fw-bold">{{ results.persona }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Savings, Expense, Projection -->
+    <div class="row text-center mb-5 g-4">
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm" style="background-color: #f1f8ff;">
+                <h6 class="text-muted">Savings Rate</h6>
+                <h5 class="fw-bold">{{ results.savings_rate|round(2) }}%</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm" style="background-color: #f1f8ff;">
+                <h6 class="text-muted">Expense Rate</h6>
+                <h5 class="fw-bold">{{ results.expense_rate|round(2) }}%</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm" style="background-color: #f1f8ff;">
+                <h6 class="text-muted">Projected End Month Status</h6>
+                <h5 class="fw-bold">{{ results.projection }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Score and Advice Card -->
+    <div class="card p-5 shadow-lg mb-5" style="background-color: #fff;">
+        <h5 class="text-center fw-bold mb-4">Financial Health Score</h5>
+
+        <div class="progress mb-5" style="height: 30px;">
+            {% set bar_color = 'bg-success' %}
+            {% if results.score <= 40 %}
+                {% set bar_color = 'bg-danger' %}
+            {% elif results.score <= 70 %}
+                {% set bar_color = 'bg-warning' %}
+            {% endif %}
+            
+            <div class="progress-bar {{ bar_color }} progress-bar-striped progress-bar-animated" role="progressbar"
+                style="width: {{ results.score }}%;" aria-valuenow="{{ results.score }}" aria-valuemin="0" aria-valuemax="100">
+                {{ results.score }}/100
+            </div>
+            
+        </div>
+
+        <hr>
+
+        <h5 class="text-center fw-bold mb-4">Personalized Advice</h5>
+        <ul class="list-group list-group-flush">
+            {% for advice_item in results.advice %}
+                <li class="list-group-item">{{ advice_item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a href="{{ url_for('routes.dashboard') }}" class="btn btn-primary px-4 py-2">Back to Dashboard</a>
+    </div>
+
+</div>
+{% endblock %}
+

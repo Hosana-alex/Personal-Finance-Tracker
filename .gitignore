@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask instance folder (contains configs/secrets)
+instance/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+
+# VS Code and IDE configs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment variables
+.env
+
+# Database
+*.sqlite3
+*.db
+
+# System files
+Thumbs.db
+desktop.ini
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# PIP metadata
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# Heroku/Python build files
+runtime.txt
